@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ 
+  @file dsc.wsdl
+ 
+  @version $Revision: 1.4 $
+ 
+  @module trustedx-demos
+ 
+  Copyright (c) 1999-2010 Safelayer Secure Communications, S.A.
+-->
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sfly="http://www.safelayer.com/TWS/DSC" xmlns:css="http://www.safelayer.com/TWS" targetNamespace="http://www.safelayer.com/TWS/DSC">
+	<types>
+		<xs:schema targetNamespace="http://www.safelayer.com/TWS/DSC">
+			<xs:import namespace="http://www.safelayer.com/TWS" schemaLocation="sly.xsd"/>
+		</xs:schema>
+	</types>
+	<message name="ArchiveRequestMessage">
+		<part name="ArchiveRequest" element="css:ArchiveRequest"/>
+	</message>
+	<message name="ArchiveResponseMessage">
+		<part name="ArchiveResponse" element="css:ArchiveResponse"/>
+	</message>
+	<message name="UpdateRequestMessage">
+		<part name="UpdateRequest" element="css:UpdateRequest"/>
+	</message>
+	<message name="UpdateResponseMessage">
+		<part name="UpdateResponse" element="css:UpdateResponse"/>
+	</message>
+	<message name="StatusRequestMessage">
+		<part name="StatusRequest" element="css:StatusRequest"/>
+	</message>
+	<message name="StatusResponseMessage">
+		<part name="StatusResponse" element="css:StatusResponse"/>
+	</message>
+	<message name="VerifyRequestMessage">
+		<part name="VerifyRequest" element="css:VerifyRequest"/>
+	</message>
+	<message name="VerifyResponseMessage">
+		<part name="VerifyResponse" element="css:VerifyResponse"/>
+	</message>
+	<message name="ExportRequestMessage">
+		<part name="ExportRequest" element="css:ExportRequest"/>
+	</message>
+	<message name="ExportResponseMessage">
+		<part name="ExportResponse" element="css:ExportResponse"/>
+	</message>
+	<message name="DeleteRequestMessage">
+		<part name="DeleteRequest" element="css:DeleteRequest"/>
+	</message>
+	<message name="DeleteResponseMessage">
+		<part name="DeleteResponse" element="css:DeleteResponse"/>
+	</message>
+	<portType name="DigitalSignatureCustodyType">
+		<operation name="Archive">
+			<input message="sfly:ArchiveRequestMessage"/>
+			<output message="sfly:ArchiveResponseMessage"/>
+		</operation>
+		<operation name="Update">
+			<input message="sfly:UpdateRequestMessage"/>
+			<output message="sfly:UpdateResponseMessage"/>
+		</operation>
+		<operation name="Status">
+			<input message="sfly:StatusRequestMessage"/>
+			<output message="sfly:StatusResponseMessage"/>
+		</operation>
+		<operation name="Verify">
+			<input message="sfly:VerifyRequestMessage"/>
+			<output message="sfly:VerifyResponseMessage"/>
+		</operation>
+		<operation name="Export">
+			<input message="sfly:ExportRequestMessage"/>
+			<output message="sfly:ExportResponseMessage"/>
+		</operation>
+		<operation name="Delete">
+			<input message="sfly:DeleteRequestMessage"/>
+			<output message="sfly:DeleteResponseMessage"/>
+		</operation>
+	</portType>
+	<binding name="DSCBinding" type="sfly:DigitalSignatureCustodyType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="Archive">
+			<soap:operation soapAction="dscArchive" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="Update">
+			<soap:operation soapAction="dscUpdate" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="Status">
+			<soap:operation soapAction="dscStatus" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="Verify">
+			<soap:operation soapAction="dscVerify" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="Export">
+			<soap:operation soapAction="dscExport" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="Delete">
+			<soap:operation soapAction="dscDelete" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="TWS-DSC">
+		<port name="DigitalSignatureCustody" binding="sfly:DSCBinding">
+			<soap:address location="https://trustedx.safelayer.com/trustedx-gw/SoapGateway"/>
+		</port>
+	</service>
+</definitions>

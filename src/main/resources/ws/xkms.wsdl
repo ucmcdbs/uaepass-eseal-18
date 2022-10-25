@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<wsdl:definitions xmlns:tns="http://www.w3.org/2002/03/xkms#wsdl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xkms="http://www.w3.org/2002/03/xkms#" xmlns:xs="http://www.w3.org/2001/XMLSchema" name="XMLKeyManagement" targetNamespace="http://www.w3.org/2002/03/xkms#wsdl">
+	<types>
+		<xs:schema targetNamespace="http://www.w3.org/2002/03/xkms#wsdl">
+			<xs:import namespace="http://www.w3.org/2002/03/xkms#" schemaLocation="xkms.xsd"/>
+		</xs:schema>
+	</types>
+	<message name="CompoundRequest">
+		<part name="body" element="xkms:CompoundRequest"/>
+	</message>
+	<message name="CompoundResult">
+		<part name="body" element="xkms:CompoundResult"/>
+	</message>
+	<message name="RegisterRequest">
+		<part name="body" element="xkms:RegisterRequest"/>
+	</message>
+	<message name="RegisterResult">
+		<part name="body" element="xkms:RegisterResult"/>
+	</message>
+
+	<portType name="XKMSPortType">
+		<operation name="Compound">
+			<input message="tns:CompoundRequest"/>
+			<output message="tns:CompoundResult"/>
+		</operation>
+		<operation name="Register">
+			<input message="tns:RegisterRequest"/>
+			<output message="tns:RegisterResult"/>
+		</operation>
+	</portType>
+
+	<binding name="SOAPBinding" type="tns:XKMSPortType">
+		<wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="Compound">
+			<wsdlsoap:operation soapAction="Compound"/>
+			<input>
+				<wsdlsoap:body use="literal"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="Register">
+			<wsdlsoap:operation soapAction="Register"/>
+			<input>
+				<wsdlsoap:body use="literal"/>
+			</input>
+			<output>
+				<wsdlsoap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="XKMSService">
+		<port name="XKMSPort" binding="tns:SOAPBinding">
+			<wsdlsoap:address location="https://trustedx.safelayer.com/trustedx-gw/SoapGateway"/>
+		</port>
+	</service>
+</wsdl:definitions>

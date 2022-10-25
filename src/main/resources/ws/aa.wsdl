@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ 
+  @file aa.wsdl
+ 
+  @version $Revision: 1.16 $
+ 
+  @module trustedx-demos
+ 
+  Copyright (c) 1999-2010 Safelayer Secure Communications, S.A.
+-->
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion" xmlns:samlp="urn:oasis:names:tc:SAML:1.0:protocol" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:sfly="http://www.safelayer.com/TWS" targetNamespace="http://www.safelayer.com/TWS">
+	<types>
+		<xs:schema targetNamespace="http://www.safelayer.com/TWS" elementFormDefault="qualified">
+			<xs:import namespace="urn:oasis:names:tc:SAML:1.0:assertion" schemaLocation="oasis-sstc-saml-schema-assertion-1.1.xsd"/>
+			<xs:import namespace="urn:oasis:names:tc:SAML:1.0:protocol" schemaLocation="oasis-sstc-saml-schema-protocol-1.1.xsd"/>
+			<xs:import namespace="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" schemaLocation="oasis-200401-wss-wssecurity-secext-1.0.xsd"/>
+			<xs:simpleType name="TwsResultType">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="success"/>
+					<xs:enumeration value="invalidAssertion"/>
+					<xs:enumeration value="systemFailure"/>
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType name="Credentials">
+				<xs:choice>
+					<xs:element ref="wsse:UsernameToken"/>
+					<xs:element ref="wsse:BinarySecurityToken"/>
+					<xs:element ref="wsse:SecurityTokenReference"/>
+				</xs:choice>
+			</xs:complexType>
+			<xs:complexType name="AgentAuthNData">
+				<xs:sequence>
+					<xs:element name="agentId" type="xs:string"/>
+					<xs:element name="rand" type="xs:base64Binary" minOccurs="0"/>
+					<xs:element name="created" type="xs:string" minOccurs="0"/>
+					<xs:element name="ipAddr" type="xs:string"/>
+					<xs:element name="auth" type="xs:base64Binary"/>
+					<xs:element name="authMethod" type="xs:anyURI"/>
+					<xs:element name="authPolicy" type="xs:anyURI" minOccurs="0"/>
+					<xs:element name="authoritative" type="xs:boolean" minOccurs="0"/>
+					<xs:element name="credentials" type="sfly:Credentials" minOccurs="0"/>
+					<xs:element name="respondWith" type="xs:QName"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="DirectType">
+				<xs:sequence>
+					<xs:element name="authPolicy" type="xs:anyURI" minOccurs="0"/>
+					<xs:element name="respondWith" type="xs:QName"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="ActionPolicies">
+				<xs:complexType>
+					<xs:sequence maxOccurs="unbounded">
+						<xs:element name="ActionPolicy" type="xs:anyURI"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="XPathInfos">
+				<xs:complexType>
+					<xs:sequence maxOccurs="unbounded">
+						<xs:element name="XPathInfo" type="sfly:xPathInfoType"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:complexType name="xPathInfoType">
+				<xs:simpleContent>
+					<xs:extension base="xs:string">
+						<xs:attribute name="name" type="xs:string"/>
+					</xs:extension>
+				</xs:simpleContent>
+			</xs:complexType>
+			<xs:element name="AccountPolicy" type="xs:anyURI"/>
+			<xs:complexType name="AuthNRequestType">
+				<xs:sequence>
+					<xs:choice>
+						<xs:element name="agent" type="sfly:AgentAuthNData"/>
+						<xs:element name="direct" type="sfly:DirectType"/>
+					</xs:choice>
+					<xs:element name="entity" type="saml:NameIdentifierType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="AnyType">
+				<xs:sequence>
+					<xs:any processContents="lax" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="AuthNResponseType">
+				<xs:sequence>
+					<xs:element name="OptionalOutputs" type="sfly:AnyType" minOccurs="0"/>
+					<xs:choice>
+						<xs:element ref="samlp:AssertionArtifact"/>
+						<xs:element ref="saml:AssertionIDReference"/>
+						<xs:element ref="saml:Assertion"/>
+					</xs:choice>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="LogoutRequestType">
+				<xs:sequence>
+					<xs:element name="entity" type="saml:NameIdentifierType" minOccurs="0"/>
+					<xs:choice>
+						<xs:element ref="samlp:AssertionArtifact"/>
+						<xs:element ref="saml:AssertionIDReference"/>
+						<xs:element ref="saml:Assertion"/>
+						<xs:element ref="wsse:SecurityTokenReference"/>
+					</xs:choice>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="LogoutResponseType">
+				<xs:sequence>
+					<xs:element name="result" type="sfly:TwsResultType"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="AuthNRequest" type="sfly:AuthNRequestType"/>
+			<xs:element name="AuthNResponse" type="sfly:AuthNResponseType"/>
+			<xs:element name="LogoutRequest" type="sfly:LogoutRequestType"/>
+			<xs:element name="LogoutResponse" type="sfly:LogoutResponseType"/>
+		</xs:schema>
+	</types>
+	<message name="AuthNRequestMessage">
+		<part name="AuthNRequest" element="sfly:AuthNRequest"/>
+	</message>
+	<message name="AuthNResponseMessage">
+		<part name="AuthNResponse" element="sfly:AuthNResponse"/>
+	</message>
+	<message name="LogoutRequestMessage">
+		<part name="LogRequest" element="sfly:LogoutRequest"/>
+	</message>
+	<message name="LogoutResponseMessage">
+		<part name="LogResponse" element="sfly:LogoutResponse"/>
+	</message>
+	<message name="AuthZRequestMessage">
+		<part name="AuthZRequest" element="samlp:Request"/>
+	</message>
+	<message name="AuthZResponseMessage">
+		<part name="AuthZResponse" element="samlp:Response"/>
+	</message>
+	<message name="SamlQueryRequestMessage">
+		<part name="SamlQueryRequest" element="samlp:Request"/>
+	</message>
+	<message name="SamlQueryResponseMessage">
+		<part name="SamlQueryResponse" element="samlp:Response"/>
+	</message>
+	<message name="AttributeQueryRequestMessage">
+		<part name="AttributeQueryRequest" element="samlp:Request"/>
+	</message>
+	<message name="AttributeQueryResponseMessage">
+		<part name="AttributeQueryResponse" element="samlp:Response"/>
+	</message>
+	<message name="SamlProtocolRequestMessage">
+		<part name="SamlProtocolRequest" element="samlp:Request"/>
+	</message>
+	<message name="SamlProtocolResponseMessage">
+		<part name="SamlProtocolResponse" element="samlp:Response"/>
+	</message>		
+	<portType name="AuthNType">
+		<operation name="AuthN">
+			<input message="sfly:AuthNRequestMessage"/>
+			<output message="sfly:AuthNResponseMessage"/>
+		</operation>
+	</portType>
+	<portType name="LogoutType">
+		<operation name="Logout">
+			<input message="sfly:LogoutRequestMessage"/>
+			<output message="sfly:LogoutResponseMessage"/>
+		</operation>
+	</portType>
+	<portType name="AuthZType">
+		<operation name="AuthZ">
+			<input message="sfly:AuthZRequestMessage"/>
+			<output message="sfly:AuthZResponseMessage"/>
+		</operation>
+	</portType>
+	<portType name="SamlQueryType">
+		<operation name="Query">
+			<input message="sfly:SamlQueryRequestMessage"/>
+			<output message="sfly:SamlQueryResponseMessage"/>
+		</operation>
+	</portType>
+	<portType name="AttributeQueryType">
+		<operation name="AttributeQuery">
+			<input message="sfly:AttributeQueryRequestMessage"/>
+			<output message="sfly:AttributeQueryResponseMessage"/>
+		</operation>
+	</portType>	
+	<portType name="SamlProtocolType">
+		<operation name="SamlProtocol">
+			<input message="sfly:SamlProtocolRequestMessage"/>
+			<output message="sfly:SamlProtocolResponseMessage"/>
+		</operation>
+	</portType>		
+	<binding name="AuthNBinding" type="sfly:AuthNType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="AuthN">
+			<soap:operation soapAction="AuthN" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<binding name="LogoutBinding" type="sfly:LogoutType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="Logout">
+			<soap:operation soapAction="Logout" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<binding name="AuthZBinding" type="sfly:AuthZType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="AuthZ">
+			<soap:operation soapAction="AuthZ" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<binding name="SamlQueryBinding" type="sfly:SamlQueryType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="Query">
+			<soap:operation soapAction="Samlp" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<binding name="AttributeQueryBinding" type="sfly:AttributeQueryType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="AttributeQuery">
+			<soap:operation soapAction="AttributeQuery" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>	
+	<binding name="SamlProtocolBinding" type="sfly:SamlProtocolType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="SamlProtocol">
+			<soap:operation soapAction="http://www.oasis-open.org/committees/security" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>	
+	<service name="TWS-AA">
+		<port name="AuthNType" binding="sfly:AuthNBinding">
+			<soap:address location="https://trustedx.safelayer.com/trustedx-gw/SoapGateway"/>
+		</port>
+		<port name="LogoutType" binding="sfly:LogoutBinding">
+			<soap:address location="https://trustedx.safelayer.com/trustedx-gw/SoapGateway"/>
+		</port>
+		<port name="AuthZType" binding="sfly:AuthZBinding">
+			<soap:address location="https://trustedx.safelayer.com/trustedx-gw/SoapGateway"/>
+		</port>
+		<port name="SamlQueryType" binding="sfly:SamlQueryBinding">
+			<soap:address location="https://trustedx.safelayer.com/trustedx-gw/SoapGateway"/>
+		</port>
+    <port name="AttributeQueryType" binding="sfly:AttributeQueryBinding">
+			<soap:address location="https://trustedx.safelayer.com/trustedx-gw/SoapGateway"/>
+		</port>		
+    <port name="SamlProtocolType" binding="sfly:SamlProtocolBinding">
+			<soap:address location="https://trustedx.safelayer.com/trustedx-gw/SoapGateway"/>
+		</port>		
+	</service>
+</definitions>

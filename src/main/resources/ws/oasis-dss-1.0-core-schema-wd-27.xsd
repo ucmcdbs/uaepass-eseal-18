@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xades="http://uri.etsi.org/01903/v1.2.2#" xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion" xmlns:css="http://www.safelayer.com/TWS" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:dss="http://www.docs.oasis-open.org/dss/2004/06/oasis-dss-1.0-core-schema-wd-27.xsd" targetNamespace="http://www.docs.oasis-open.org/dss/2004/06/oasis-dss-1.0-core-schema-wd-27.xsd" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.safelayer.com/TWS" schemaLocation="sly.xsd"/>
+	<xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd"/>
+	<xs:import namespace="urn:oasis:names:tc:SAML:1.0:assertion" schemaLocation="oasis-sstc-saml-schema-assertion-1.1.xsd"/>
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+	<xs:import namespace="http://uri.etsi.org/01903/v1.2.2#" schemaLocation="XAdES.xsd"/>
+	<!-- COMMON PROTOCOL STRUCTURES -->
+	<xs:complexType name="AnyType">
+		<xs:sequence>
+			<xs:any processContents="lax" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InternationalStringType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute ref="xml:lang"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="DocumentBaseType" abstract="true">
+		<xs:sequence>
+			<xs:element ref="ds:Transforms" minOccurs="0"/>
+			<xs:element name="DTD" type="xs:base64Binary" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="ID" type="xs:ID" use="optional"/>
+		<xs:attribute name="RefURI" type="xs:string" use="optional"/>
+		<xs:attribute name="RefType" type="xs:anyURI" use="optional"/>
+	</xs:complexType>
+	<xs:element name="XMLData" type="dss:AnyType"/>
+	<xs:element name="Base64Data">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:base64Binary">
+					<xs:attribute name="MimeType" type="xs:string" use="optional"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="DocumentHash">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="dss:DocumentBaseType">
+					<xs:sequence>
+						<xs:element ref="ds:DigestMethod"/>
+						<xs:element ref="ds:DigestValue"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Base64Signature">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:base64Binary">
+					<xs:attribute name="Type" type="xs:anyURI"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SignaturePtr">
+		<xs:complexType>
+			<xs:attribute name="WhichDocument" type="xs:IDREF"/>
+			<xs:attribute name="XPath" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Result">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ResultMajor" type="xs:anyURI"/>
+				<xs:element name="ResultMinor" type="xs:anyURI" minOccurs="0"/>
+				<xs:element name="ResultMessage" type="dss:InternationalStringType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- ADDED FOR KEYONEWS -->
+	<!--********************-->
+	<!--********************-->
+	<xs:element name="Document">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="dss:DocumentBaseType">
+					<xs:choice>
+						<xs:element ref="dss:XMLData" minOccurs="0"/>
+						<xs:element ref="dss:Base64Data" minOccurs="0"/>
+						<xs:element name="Base64XML" type="xs:base64Binary" minOccurs="0"/>
+					</xs:choice>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InputDocuments">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="dss:Document"/>
+					<xs:element ref="dss:DocumentHash"/>
+					<xs:element ref="dss:Base64Signature"/>
+					<xs:element ref="css:Mime"/>
+					<xs:element ref="css:MimeSignature"/>
+					<xs:element ref="css:DocumentReference"/>
+					<xs:element ref="css:DocumentReferenceID"/>
+					<xs:element ref="css:DocumentItem" maxOccurs="unbounded"/>
+					<xs:any namespace="##local" processContents="lax"/>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SignatureObject">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice>
+					<xs:element ref="ds:Signature"/>
+					<xs:element ref="dss:Timestamp"/>
+					<xs:element ref="dss:Base64Signature"/>
+					<xs:element ref="css:MimeSignature"/>
+					<xs:element ref="dss:SignaturePtr"/>
+					<xs:element ref="css:Base64XMLSignature"/>
+					<xs:any namespace="http://www.safelayer.com/TWS/" processContents="lax"/>
+				</xs:choice>
+				<xs:element name="DTD" type="xs:base64Binary" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OptionalOutputs">
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="css:MultiSignatureResult" minOccurs="0"/>
+				<xs:element ref="dss:UpdatedSignature" minOccurs="0"/>
+				<xs:element ref="dss:SigningTime" minOccurs="0"/>
+				<xs:element ref="dss:SignerIdentity" minOccurs="0"/>
+				<xs:element ref="css:TrustInfo" minOccurs="0"/>
+				<xs:element ref="css:CertificateValues" minOccurs="0"/>
+				<xs:element ref="css:TimeStampValues" minOccurs="0"/>
+				<xs:element ref="css:XType1TimeStampValues" minOccurs="0"/>
+				<xs:element ref="css:ArchiveTimeStampValues" minOccurs="0"/>
+				<xs:element ref="css:NewTimeStampValues" minOccurs="0"/>
+				<xs:element ref="css:NewXType1TimeStampValues" minOccurs="0"/>
+				<xs:element ref="css:NewArchiveTimeStampValues" minOccurs="0"/>
+				<xs:element ref="xades:RevocationValues" minOccurs="0"/>
+				<xs:element ref="css:TrustInfoSummary" minOccurs="0"/>
+				<xs:element ref="css:VerifyingPolicy" minOccurs="0"/>
+				<xs:element ref="css:VerifyingRule" minOccurs="0"/>
+				<xs:element ref="css:ValidationPolicy" minOccurs="0"/>
+				<xs:element ref="css:ValidationRule" minOccurs="0"/>
+				<xs:element ref="css:SignerRole" minOccurs="0"/>
+				<xs:element ref="css:SigningCommitments" minOccurs="0"/>
+				<xs:element ref="css:SignatureProductionPlace" minOccurs="0"/>
+				<xs:element ref="css:SignaturePolicyIdentifier" minOccurs="0"/>
+				<xs:element ref="css:ChainInformationValues" minOccurs="0"/>
+				<xs:element ref="css:PdfFieldLabel" minOccurs="0"/>
+				<xs:element ref="css:PdfSignatureInfo" minOccurs="0"/>
+				<xs:element ref="dss:Document" minOccurs="0"/>
+				<xs:element ref="css:Mime" minOccurs="0"/>
+				<xs:element ref="dss:DocumentWithSignature" minOccurs="0"/>
+				<xs:element ref="css:SignedDocuments" minOccurs="0"/>
+				<xs:element ref="css:SignedAttributes" minOccurs="0"/>
+				<xs:element ref="css:UnsignedAttributes" minOccurs="0"/>
+				<xs:element ref="css:SignatureInfo" minOccurs="0"/>
+				<xs:element ref="css:IncludedManifests" minOccurs="0"/>
+				<xs:element ref="css:NotVerifiedReferences" minOccurs="0"/>
+				<xs:element ref="css:NotVerifiedManifestReferences" minOccurs="0"/>
+				<xs:element ref="css:SigningAdditionalInfo" minOccurs="0"/>
+				<xs:element ref="css:AdditionalInfo" minOccurs="0"/>
+				<xs:element ref="css:SignatureForm" minOccurs="0"/>
+				<xs:element ref="dss:SignatureType" minOccurs="0"/>
+				<xs:element ref="css:NewSignatureForm" minOccurs="0"/>
+				<xs:element ref="css:BaselineLevel" minOccurs="0"/>
+				<xs:element ref="css:OtherVerifyResponses" minOccurs="0"/>
+				
+				<xs:element ref="css:NumberPdfSignatures" minOccurs="0"/>
+				<xs:element ref="css:SuccessRecipientInfo" minOccurs="0"/>
+				<xs:element ref="css:FailedRecipientInfo" minOccurs="0"/>
+				<xs:element ref="css:ThisRecipientInfo" minOccurs="0"/>
+				<xs:element ref="css:OtherRecipientInfo" minOccurs="0"/>
+				<xs:element ref="css:ContentEncryptionAlgorithms" minOccurs="0"/>
+				<xs:element ref="css:SignatureFieldsInfo" minOccurs="0"/>
+				<xs:element ref="css:DigitalDocument" minOccurs="0"/>
+				<xs:element ref="css:DigitalSignatures" minOccurs="0"/>
+				<xs:element ref="css:ArchivedRevocationValues" minOccurs="0"/>
+				<xs:element ref="dss:DocumentHash" minOccurs="0"/>
+				<xs:element ref="css:SignersCertificates" minOccurs="0"/>
+				<xs:element ref="css:SearchResults" minOccurs="0"/>
+				<!--<xs:any namespace="http://www.safelayer.com/TWS/"/>-->
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OptionalInputs">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="dss:ServicePolicy" minOccurs="0"/>
+				<xs:element name="Policy" type="xs:anyURI" minOccurs="0"/>
+				<xs:element ref="dss:ClaimedIdentity" minOccurs="0"/>
+				<xs:element ref="dss:Language" minOccurs="0"/>
+				<xs:element ref="dss:AdditionalProfile" minOccurs="0"/>
+				<xs:element ref="dss:SignatureType" minOccurs="0"/>
+				<xs:element ref="dss:KeySelector" minOccurs="0"/>
+				<xs:element ref="dss:AddTimestamp" minOccurs="0"/>
+				<xs:element ref="dss:EnvelopingSignature" minOccurs="0"/>
+				<xs:element ref="css:SignatureDigestAlgorithm" minOccurs="0"/>
+				<xs:element ref="dss:VerificationTime" minOccurs="0"/>
+				<xs:element ref="css:AddMultiSignatureResult" minOccurs="0"/>
+				<xs:element ref="css:MultiSignatureUpdating" minOccurs="0"/>
+				<xs:element ref="css:AddCertificateValues" minOccurs="0"/>
+				<xs:element ref="css:AddChainCertificateValues" minOccurs="0"/>
+				<xs:element ref="css:AddRevocationValues" minOccurs="0"/>
+				<xs:element ref="css:AddChainRevocationValues" minOccurs="0"/>
+				<xs:element ref="css:AddOtherVerifyResponses" minOccurs="0"/>
+				<xs:element ref="css:AddTimeStampValues" minOccurs="0"/>
+				<xs:element ref="css:AddAdditionalInfoValues" minOccurs="0"/>
+				<xs:element ref="css:AddRulesInformation" minOccurs="0"/>
+				<xs:element ref="dss:Properties" minOccurs="0"/>
+				<xs:element ref="dss:SignaturePlacement" minOccurs="0"/>
+				<xs:element ref="css:ExtendedSignaturePlacement" minOccurs="0"/>
+				<xs:element ref="css:NodeToSign" minOccurs="0"/>
+				<xs:element ref="css:MultiNodeToSign" minOccurs="0"/>
+				<xs:element ref="css:CanonicalizationMethod" minOccurs="0"/>
+				<xs:element ref="dss:ReturnSigningTime" minOccurs="0"/>
+				<xs:element ref="dss:ReturnSignerIdentity" minOccurs="0"/>
+				<xs:element ref="css:ReturnSigningDocument" minOccurs="0"/>
+				<xs:element ref="dss:ReturnUpdatedSignature" minOccurs="0"/>
+				<xs:element ref="css:SignatureForm" minOccurs="0"/>
+				<xs:element ref="css:VerifyLastSignature" minOccurs="0"/>
+				<xs:element ref="css:NumberPdfSignature" minOccurs="0"/>
+				<xs:element ref="css:AddSignatureKeyInfo" minOccurs="0"/>
+				<xs:element ref="css:AddEncryptedKeyInfo" minOccurs="0"/>
+				<xs:element ref="css:SimpleXMLDSig" minOccurs="0"/>
+				<xs:element ref="css:SignedReferences" minOccurs="0"/>
+				<xs:element ref="css:EncryptionType" minOccurs="0"/>
+				<xs:element ref="css:SymmetricKeyInfo" minOccurs="0"/>
+				<xs:element ref="css:SecurityLabel" minOccurs="0"/>
+				<xs:element ref="css:Recipients" minOccurs="0"/>
+				<xs:element ref="css:NodeToEncrypt" minOccurs="0"/>
+				<xs:element ref="css:EncryptedKeyPlacement" minOccurs="0"/>
+				<xs:element ref="css:AddRecipientInfoSuccess" minOccurs="0"/>
+				<xs:element ref="css:AddRecipientInfoFailed" minOccurs="0"/>
+				<xs:element ref="css:AddSymmetricAlgorithm" minOccurs="0"/>
+				<xs:element ref="css:AddThisRecipientInfo" minOccurs="0"/>
+				<xs:element ref="css:AddOtherRecipientInfo" minOccurs="0"/>
+				<xs:element ref="css:RemoveEncryptedKeys" minOccurs="0"/>
+				<xs:element ref="css:EncryptOptionalInputs" minOccurs="0"/>
+				<xs:element ref="css:DecryptOptionalInputs" minOccurs="0"/>
+				<xs:element ref="css:AddSignatureForm" minOccurs="0"/>
+				<xs:element ref="css:AddBaselineLevel" minOccurs="0"/>
+				<xs:element ref="css:AddNewTimeStampValues" minOccurs="0"/>
+				<xs:element ref="css:ExcludeSigningDocument" minOccurs="0"/>
+				<xs:element ref="css:AddPdfSignatureInfo" minOccurs="0"/>
+				<xs:element ref="css:AddSignatureFieldsInfo" minOccurs="0"/>
+				<xs:element ref="css:StoreSignatureField" minOccurs="0"/>
+				<xs:element ref="css:CounterSignature" minOccurs="0"/>
+				<xs:element ref="css:IncludeManifest" minOccurs="0"/>
+				<xs:element ref="css:IncludeManifests" minOccurs="0"/>
+				<xs:element ref="css:ReturnBase64XML" minOccurs="0"/>
+				<xs:element ref="css:RetentionPeriod" minOccurs="0"/>
+				<xs:element ref="css:SearchKeywords" minOccurs="0"/>
+				<xs:element ref="css:SearchConditions" minOccurs="0"/>
+				<xs:element ref="css:UpdateSignature" minOccurs="0"/>
+				<xs:element ref="css:DeleteArchiveMaterial" minOccurs="0"/>
+				<xs:element ref="css:ToBeVerifiedFields" minOccurs="0"/>
+				<xs:element ref="css:AddSignatureAlgorithm" minOccurs="0"/>
+				<xs:element ref="css:AddSignedAttributes" minOccurs="0"/>
+				<xs:element ref="css:AddUnsignedAttributes" minOccurs="0"/>
+				<xs:element ref="css:ReturnDocumentHash" minOccurs="0"/>
+				<xs:element ref="css:ExcludeChainCertificates" minOccurs="0"/>
+				<xs:element ref="css:ExcludeSignerCertificate" minOccurs="0"/>
+				<xs:element ref="css:IncludeChainCertificates" minOccurs="0"/>
+				<xs:element ref="css:SignersCertificates" minOccurs="0"/>
+				<xs:element ref="css:IncludeDataObjectFormat" minOccurs="0"/>
+				<xs:element ref="css:IncludeObject" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="css:AdditionalMetadata" minOccurs="0"/>
+				<xs:element ref="css:ReturnSignedDocuments" minOccurs="0"/>
+				<xs:element ref="css:MultiSignatureSelection" minOccurs="0"/>
+				<xs:element ref="css:AddSignatureType" minOccurs="0"/>
+				<xs:any namespace="http://www.safelayer.com/TWS/"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="VerificationTime" type="xs:dateTime"/>
+	<xs:element name="SigningTime">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:dateTime">
+					<xs:attribute name="ThirdPartyTimestamp" type="xs:boolean" use="required"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<!--********************-->
+	<!--********************-->
+	<!--********************-->
+	<!--********************-->
+	<xs:element name="ServicePolicy" type="xs:anyURI"/>
+	<xs:element name="ClaimedIdentity" type="saml:NameIdentifierType"/>
+	<xs:element name="Language" type="xs:language"/>
+	<xs:element name="AdditionalProfile" type="xs:anyURI"/>
+	<!-- COMMON PROTOCOL STRUCTURES -->
+	<!-- PROTOCOL MESSAGES BEGIN -->
+	<xs:element name="SignRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="dss:OptionalInputs" minOccurs="0"/>
+				<xs:element ref="dss:InputDocuments"/>
+			</xs:sequence>
+			<xs:attribute name="RequestID" type="xs:string" use="optional"/>
+			<xs:attribute name="Profile" type="xs:anyURI" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SignResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="dss:Result"/>
+				<xs:element ref="dss:OptionalOutputs" minOccurs="0"/>
+				<xs:element ref="dss:SignatureObject" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="RequestID" type="xs:string" use="optional"/>
+			<xs:attribute name="Profile" type="xs:anyURI" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="VerifyRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="dss:OptionalInputs" minOccurs="0"/>
+				<xs:element ref="dss:SignatureObject" minOccurs="0"/>
+				<xs:element ref="dss:InputDocuments" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="RequestID" type="xs:string" use="optional"/>
+			<xs:attribute name="Profile" type="xs:anyURI" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="VerifyResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="dss:Result"/>
+				<xs:element ref="dss:OptionalOutputs" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="RequestID" type="xs:string" use="optional"/>
+			<xs:attribute name="Profile" type="xs:anyURI" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<!-- PROTOCOL MESSAGES END -->
+	<!-- SIGNREQUEST OPTIONAL INPUTS START -->
+	<xs:element name="SignatureType" type="xs:anyURI"/>
+	<xs:element name="AddTimestamp">
+		<xs:complexType>
+			<xs:attribute name="Type" type="xs:anyURI" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="IntendedAudience">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Recipient" type="saml:NameIdentifierType" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="KeySelector">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="ds:KeyInfo"/>
+				<xs:element ref="css:KeySelector"/>
+				<xs:any namespace="http://www.safelayer.com/TWS/"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SignedReferences">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="dss:SignedReference" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SignedReference">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ds:Transforms" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="WhichDocument" type="xs:IDREF" use="required"/>
+			<xs:attribute name="RefId" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Properties">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="SignedProperties" type="dss:PropertiesType" minOccurs="0"/>
+				<xs:element name="UnsignedProperties" type="dss:PropertiesType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="PropertiesType">
+		<xs:sequence>
+			<xs:element ref="dss:Property" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Property">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Identifier" type="xs:anyURI"/>
+				<xs:element name="Value" type="dss:AnyType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SignaturePlacement">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element name="XPathAfter" type="xs:string"/>
+				<xs:element name="XPathFirstChildOf" type="xs:string"/>
+			</xs:choice>
+			<xs:attribute name="WhichDocument" type="xs:IDREF"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="EnvelopingSignature">
+		<xs:complexType>
+			<xs:attribute name="WhichDocument" type="xs:IDREF"/>
+		</xs:complexType>
+	</xs:element>
+	<!-- SIGNREQUEST OPTIONAL INPUTS END -->
+	<!-- SIGNRESPONSE OPTIONAL OUTPUTS START -->
+	<xs:element name="DocumentWithSignature">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="dss:XMLData"/>
+				<xs:element name="Base64XML" type="xs:base64Binary" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- SIGNRESPONSE OPTIONAL OUTPUTS END -->
+	<!-- VERIFYREQUEST OPTIONAL INPUTS START -->
+	<xs:element name="VerifyManifests"/>
+	<xs:element name="AdditionalKeyInfo">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ds:KeyInfo"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ReturnProcessingDetails"/>
+	<xs:element name="ReturnSigningTime"/>
+	<xs:element name="ReturnTimestampTime"/>
+	<xs:element name="ReturnSignerIdentity"/>
+	<xs:element name="ReturnUpdatedSignature">
+		<xs:complexType>
+			<xs:attribute name="Type" type="xs:anyURI" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ReturnTransformedDocument">
+		<xs:complexType>
+			<xs:attribute name="WhichReference" type="xs:integer" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<!-- VERIFYREQUEST OPTIONAL INPUTS END -->
+	<!-- VERIFYRESPONSE OPTIONAL OUTPUTS START -->
+	<xs:element name="ProcessingDetails">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ValidDetail" type="dss:DetailType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="IndeterminateDetail" type="dss:DetailType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="InvalidDetail" type="dss:DetailType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="DetailType">
+		<xs:sequence>
+			<xs:element name="Code" type="xs:anyURI" minOccurs="0"/>
+			<xs:element name="Message" type="dss:InternationalStringType" minOccurs="0"/>
+			<xs:any namespace="http://www.safelayer.com/TWS/" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Type" type="xs:anyURI" use="required"/>
+	</xs:complexType>
+	<xs:element name="TimestampTime" type="xs:dateTime"/>
+	<xs:element name="SignerIdentity" type="saml:NameIdentifierType"/>
+	<xs:element name="UpdatedSignature">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="dss:SignatureObject"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TransformedDocument">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="dss:XMLData"/>
+			</xs:sequence>
+			<xs:attribute name="WhichReference" type="xs:integer" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<!-- VERIFYRESPONSE OPTIONAL OUTPUTS END -->
+	<!-- TIMESTAMP BEGIN -->
+	<xs:element name="Timestamp">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="ds:Signature"/>
+				<xs:element name="RFC3161TimeStampToken" type="xs:base64Binary"/>
+				<xs:any namespace="http://www.safelayer.com/TWS"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TstInfo">
+		<xs:complexType>
+			<xs:sequence>
+				<!-- <xs:element name="SerialNumber" type="xs:integer"/>-->
+				<xs:element name="SerialNumber" type="xs:base64Binary"/>
+				<xs:element name="CreationTime" type="xs:dateTime"/>
+				<xs:element name="Policy" type="xs:anyURI" minOccurs="0"/>
+				<xs:element name="ErrorBound" type="xs:duration" minOccurs="0"/>
+				<xs:element name="Ordered" type="xs:boolean" default="false" minOccurs="0"/>
+				<xs:element name="TSA" type="saml:NameIdentifierType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- TIMESTAMP END -->
+	<!-- REQUESTER IDENTITY BEGIN -->
+	<xs:element name="RequesterIdentity">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Name" type="saml:NameIdentifierType"/>
+				<xs:element name="SupportingInfo" type="dss:AnyType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- REQUESTER IDENTITY END -->
+</xs:schema>

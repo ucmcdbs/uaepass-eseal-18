@@ -1,0 +1,27 @@
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.ws.client.MessageTracing.sent: DEBUG
+    org.springframework.ws.client.MessageTracing.received: TRACE
+
+eseal:
+  client:
+    uri: "https://stg-id.uaepass.ae/trustedx-gw/SoapGateway"
+    username: ${ESEAL_CLIENT_USERNAME}
+    password: ${ESEAL_CLIENT_PASSWORD}
+  signature:
+    key-name: "CN=Staging-Federal eSeal, O=Federal Entity, L=Abu Dhabi, C=AE"
+    key-format: "urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName"
+    validation-method: PPKMS
+    position: LAST

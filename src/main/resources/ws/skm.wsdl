@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ 
+  @file skm.wsdl
+ 
+  @version $Revision: 1.3 $
+ 
+  @module trustedx-demos
+ 
+  Copyright (c) 1999-2010 Safelayer Secure Communications, S.A.
+-->
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sfly="http://www.safelayer.com/TWS/SKM" xmlns:css="http://www.safelayer.com/TWS" targetNamespace="http://www.safelayer.com/TWS/SKM">
+	<types>
+		<xs:schema targetNamespace="http://www.safelayer.com/TWS/SKM">
+			<xs:import namespace="http://www.safelayer.com/TWS" schemaLocation="sly.xsd"/>
+		</xs:schema>
+	</types>
+	<message name="GenKeyRequestMessage">
+		<part name="GenKeyRequest" element="css:GenKeyRequest"/>
+	</message>
+	<message name="GenKeyResponseMessage">
+		<part name="GenKeyResponse" element="css:GenKeyResponse"/>
+	</message>
+	<message name="PutKeyRequestMessage">
+		<part name="PutKeyRequest" element="css:PutKeyRequest"/>
+	</message>
+	<message name="PutKeyResponseMessage">
+		<part name="PutKeyResponse" element="css:PutKeyResponse"/>
+	</message>
+	<message name="GetKeyRequestMessage">
+		<part name="GetKeyRequest" element="css:GetKeyRequest"/>
+	</message>
+	<message name="GetKeyResponseMessage">
+		<part name="GetKeyResponse" element="css:GetKeyResponse"/>
+	</message>
+	<message name="ListKeysRequestMessage">
+		<part name="ListKeysRequest" element="css:ListKeysRequest"/>
+	</message>
+	<message name="ListKeysResponseMessage">
+		<part name="ListKeysResponse" element="css:ListKeysResponse"/>
+	</message>
+	<message name="DeleteKeysRequestMessage">
+		<part name="DeleteKeysRequest" element="css:DeleteKeysRequest"/>
+	</message>
+	<message name="DeleteKeysResponseMessage">
+		<part name="DeleteKeysResponse" element="css:DeleteKeysResponse"/>
+	</message>
+	<portType name="SymmetricKeyManagementType">
+		<operation name="GenKey">
+			<input message="sfly:GenKeyRequestMessage"/>
+			<output message="sfly:GenKeyResponseMessage"/>
+		</operation>
+		<operation name="PutKey">
+			<input message="sfly:PutKeyRequestMessage"/>
+			<output message="sfly:PutKeyResponseMessage"/>
+		</operation>
+		<operation name="GetKey">
+			<input message="sfly:GetKeyRequestMessage"/>
+			<output message="sfly:GetKeyResponseMessage"/>
+		</operation>
+		<operation name="ListKeys">
+			<input message="sfly:ListKeysRequestMessage"/>
+			<output message="sfly:ListKeysResponseMessage"/>
+		</operation>
+		<operation name="DeleteKeys">
+			<input message="sfly:DeleteKeysRequestMessage"/>
+			<output message="sfly:DeleteKeysResponseMessage"/>
+		</operation>
+	</portType>
+	<binding name="SKMBinding" type="sfly:SymmetricKeyManagementType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="GenKey">
+			<soap:operation soapAction="skmGenKey" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="PutKey">
+			<soap:operation soapAction="skmPutKey" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="GetKey">
+			<soap:operation soapAction="skmGetKey" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="ListKeys">
+			<soap:operation soapAction="skmListKeys" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="DeleteKeys">
+			<soap:operation soapAction="skmDeleteKeys" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="TWS-SKM">
+		<port name="SymmetricKeyManagement" binding="sfly:SKMBinding">
+			<soap:address location="https://trustedx.safelayer.com/trustedx-gw/SoapGateway"/>
+		</port>
+	</service>
+</definitions>

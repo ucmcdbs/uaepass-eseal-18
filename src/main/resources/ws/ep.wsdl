@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ 
+  @file ep.wsdl
+ 
+  @version $Revision: 1.16 $
+ 
+  @module trustedx-demos
+ 
+  Copyright (c) 1999-2010 Safelayer Secure Communications, S.A.
+-->
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sfly="http://www.safelayer.com/TWS" targetNamespace="http://www.safelayer.com/TWS">
+	<types>
+		<xs:schema targetNamespace="http://www.safelayer.com/TWS" elementFormDefault="qualified">
+			<xs:simpleType name="TwsEPResultType">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="success"/>
+					<xs:enumeration value="xpathNotFound"/>
+					<xs:enumeration value="systemFailure"/>
+				</xs:restriction>
+			</xs:simpleType>
+		  <xs:complexType name="TwsEPData">
+			 	<xs:sequence>
+					<xs:any processContents="lax" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="TwsEPrepositoryInfo">
+				<xs:sequence>
+					<xs:any processContents="lax"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="TwsEPReadArg">
+				<xs:sequence>
+					<xs:element name="startAt" type="xs:integer" minOccurs="0"/>
+					<xs:element name="nextElements" type="xs:integer" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="xpath" type="xs:string" use="required"/>
+			</xs:complexType>						
+				<xs:complexType name="TwsEPReadRes">
+					<xs:sequence>
+						<xs:element name="result" type="sfly:TwsEPResultType"/>
+						<xs:element name="totalElements" type="xs:integer" minOccurs="0"/>
+						<xs:element name="numElements" type="xs:integer" minOccurs="0"/>
+						<xs:element name="startAt" type="xs:integer" minOccurs="0"/>
+						<xs:element name="endAt" type="xs:integer" minOccurs="0"/>
+						<xs:element name="end" type="xs:boolean" default="false" minOccurs="0"/>
+	        	<xs:element name="data" type="sfly:TwsEPData" minOccurs="0"/>
+					</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="TwsEPWriteArg">
+      	<xs:sequence>
+						<xs:element name="data" type="sfly:TwsEPData"/>
+				</xs:sequence>	
+				<xs:attribute name="xpath" type="xs:string" use="required"/>
+			</xs:complexType>
+			<xs:complexType name="TwsEPWriteRes">
+				<xs:sequence>
+					<xs:element name="result" type="sfly:TwsEPResultType"/>
+					<xs:element name="repositoryInfo" type="sfly:TwsEPrepositoryInfo" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="TwsEPDeleteArg">
+				<xs:attribute name="xpath" type="xs:string" use="required"/>
+			</xs:complexType>
+			<xs:complexType name="TwsEPDeleteRes">
+				<xs:sequence>
+					<xs:element name="result" type="sfly:TwsEPResultType"/>
+					<xs:element name="repositoryInfo" type="sfly:TwsEPrepositoryInfo" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="TwsEPSearchArg">
+				<xs:attribute name="xpath" type="xs:string" use="required"/>
+			</xs:complexType>						
+			<xs:complexType name="TwsEPSearchRes">
+				<xs:sequence>
+					<xs:element name="result" type="sfly:TwsEPResultType"/>
+					<xs:element name="data" type="xs:boolean"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="TwsEPCountArg">
+				<xs:attribute name="xpath" type="xs:string" use="required"/>
+			</xs:complexType>						
+			<xs:complexType name="TwsEPCountRes">
+				<xs:sequence>
+					<xs:element name="result" type="sfly:TwsEPResultType"/>
+					<xs:element name="data" type="xs:integer"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="ReadRequest" type="sfly:TwsEPReadArg"/>
+			<xs:element name="ReadResponse" type="sfly:TwsEPReadRes"/>
+			<xs:element name="InsertRequest" type="sfly:TwsEPWriteArg"/>
+			<xs:element name="InsertResponse" type="sfly:TwsEPWriteRes"/>			
+			<xs:element name="UpdateRequest" type="sfly:TwsEPWriteArg"/>						
+			<xs:element name="UpdateResponse" type="sfly:TwsEPWriteRes"/>
+			<xs:element name="DeleteRequest" type="sfly:TwsEPDeleteArg"/>			
+			<xs:element name="DeleteResponse" type="sfly:TwsEPDeleteRes"/>			
+			<xs:element name="SearchRequest" type="sfly:TwsEPSearchArg"/>			
+			<xs:element name="SearchResponse" type="sfly:TwsEPSearchRes"/>			
+			<xs:element name="CountRequest" type="sfly:TwsEPCountArg"/>			
+			<xs:element name="CountResponse" type="sfly:TwsEPCountRes"/>			
+		</xs:schema>
+	</types>
+	<message name="TwsEPReadRequestType">
+		<part name="ReadRequest" element="sfly:ReadRequest"/>
+	</message>
+	<message name="TwsEPReadResponseType">
+		<part name="ReadResponse" element="sfly:ReadResponse"/>
+	</message>
+	<message name="TwsEPInsertRequestType">
+		<part name="InsertRequest" element="sfly:InsertRequest"/>
+	</message>
+	<message name="TwsEPInsertResponseType">
+		<part name="InsertResponse" element="sfly:InsertResponse"/>
+	</message>
+	<message name="TwsEPUpdateRequestType">
+		<part name="UpdateRequest" element="sfly:UpdateRequest"/>
+	</message>
+	<message name="TwsEPUpdateResponseType">
+		<part name="UpdateResponse" element="sfly:UpdateResponse"/>
+	</message>
+	<message name="TwsEPDeleteRequestType">
+		<part name="DeleteRequest" element="sfly:DeleteRequest"/>
+	</message>
+	<message name="TwsEPDeleteResponseType">
+		<part name="DeleteResponse" element="sfly:DeleteResponse"/>
+	</message>
+	<message name="TwsEPSearchRequestType">
+		<part name="SearchRequest" element="sfly:SearchRequest"/>
+	</message>
+	<message name="TwsEPSearchResponseType">
+		<part name="SearchResponse" element="sfly:SearchResponse"/>
+	</message>
+		<message name="TwsEPCountRequestType">
+		<part name="CountRequest" element="sfly:CountRequest"/>
+	</message>
+	<message name="TwsEPCountResponseType">
+		<part name="CountResponse" element="sfly:CountResponse"/>
+	</message>
+	<portType name="TwsEPType">
+		<operation name="Read">
+			<input message="sfly:TwsEPReadRequestType"/>
+			<output message="sfly:TwsEPReadResponseType"/>
+		</operation>
+		<operation name="Insert">
+			<input message="sfly:TwsEPInsertRequestType"/>
+			<output message="sfly:TwsEPInsertResponseType"/>
+		</operation>
+		<operation name="Update">
+			<input message="sfly:TwsEPUpdateRequestType"/>
+			<output message="sfly:TwsEPUpdateResponseType"/>
+		</operation>
+		<operation name="Delete">
+			<input message="sfly:TwsEPDeleteRequestType"/>
+			<output message="sfly:TwsEPDeleteResponseType"/>
+		</operation>
+		<operation name="Search">
+			<input message="sfly:TwsEPSearchRequestType"/>
+			<output message="sfly:TwsEPSearchResponseType"/>
+		</operation>
+		<operation name="Count">
+			<input message="sfly:TwsEPCountRequestType"/>
+			<output message="sfly:TwsEPCountResponseType"/>
+		</operation>
+	</portType>
+	<binding name="TwsEPBinding" type="sfly:TwsEPType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="Read">
+			<soap:operation soapAction="Read" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="Insert">
+			<soap:operation soapAction="Insert" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="Update">
+			<soap:operation soapAction="Update" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="Delete">
+			<soap:operation soapAction="Delete" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>		
+		<operation name="Search">
+			<soap:operation soapAction="Search" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="Count">
+			<soap:operation soapAction="Count" style="document"/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="TWS-EP">
+		<port name="EntityProfiler" binding="sfly:TwsEPBinding">
+			<soap:address location="https://trustedx.safelayer.com/trustedx-gw/SoapGateway"/>
+		</port>
+	</service>
+</definitions>
