@@ -21,6 +21,9 @@ public class EsealController {
     @Autowired
     EsealClient esealClient;
 
+    @Autowired
+    EsealAnnotator esealAnnotator;
+
     @PostMapping("/")
     @ResponseBody
     public ResponseEntity<Resource> seal(@RequestParam("document") MultipartFile file) {
@@ -28,6 +31,9 @@ public class EsealController {
 
         try {
             byte[] document = file.getBytes();
+
+            document = esealAnnotator.annotate(document);
+
             EsealResponse response = esealClient.sealDocument(document);
 
             HttpHeaders headers = new HttpHeaders();
@@ -46,6 +52,9 @@ public class EsealController {
                 return new ResponseEntity<Resource>(HttpStatus.BAD_REQUEST);
             }
         } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<Resource>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
